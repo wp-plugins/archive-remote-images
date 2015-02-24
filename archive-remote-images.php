@@ -3,8 +3,8 @@
  * Plugin Name: Archive Remote Images
  * Plugin URI: https://wordpress.org/plugins/archive-remote-images
  * Description: Archive Remote Images allows you to scan a post to fetch remote images; then updates its content automatically.
- * Author: Kason Zhao, G.Breant
- * Version: 1.0.4
+ * Author: Kason Zhao, G.Breant, kraoc
+ * Version: 1.0.7
  * Author URI: https://profiles.wordpress.org/kasonzhao/
  * License: GPL2+
  * Text Domain: ari
@@ -18,7 +18,7 @@ class ArchiveRemoteImages{
     /**
      * @public string plugin version
      */
-    public $version = '1.04';
+    public $version = '1.07';
     
 
     /** Paths *****************************************************************/
@@ -300,13 +300,13 @@ class ArchiveRemoteImages{
 
         //DOMDocument
         libxml_use_internal_errors(true); //avoid errors like duplicate IDs
-        $doc = new DOMDocument();
+        $doc = new DOMDocument( '1.0', get_bloginfo('charset') );
         
         //try to fix bad HTML
         $doc->recover = true; 
         //$doc->strictErrorChecking = false;
         
-        $doc->loadHTML($post->post_content);
+        $doc->loadHTML($post->post_content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOBLANKS | LIBXML_NOCDATA | LIBXML_NOXMLDECL | LIBXML_NSCLEAN);
 
         //get images urls in post content
         $images = self::fetch_remote_images($doc);
@@ -362,6 +362,18 @@ class ArchiveRemoteImages{
         return false;
     }
     
+    function is_local_server($url){
+        
+        if ($_SERVER['REMOTE_ADDR']=='127.0.0.1') return true;
+        
+        $parse = parse_url($url);
+        $host_names = explode(".", $parse['host']);
+        
+        if (!isset($host_names[1])) return true; //no extension, we should be on a local server (like localhost)
+        
+        return false;
+    }
+    
     /*
      * Get domain (without subdomain like www.)
      */
@@ -369,8 +381,15 @@ class ArchiveRemoteImages{
     function get_domain($url){
         if (!self::is_absolute_url($url)) return false;
         $parse = parse_url($url);
+
         $host_names = explode(".", $parse['host']);
-        $domain = $host_names[count($host_names)-2] . "." . $host_names[count($host_names)-1];
+
+        if (self::is_local_server($url)){
+            $domain = $parse['host'];
+        }else{
+            $domain = $host_names[count($host_names)-2] . "." . $host_names[count($host_names)-1];
+        }
+
         return $domain;
     }
     
@@ -612,7 +631,7 @@ class ArchiveRemoteImages{
 
                 }
 
-                //TO FIX : remove doctype, html and body tags.
+                $doc->normalizeDocument();
                 $post_content =  $doc->saveHTML();
                 
             }
