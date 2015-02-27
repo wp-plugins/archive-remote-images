@@ -1,5 +1,5 @@
 === Archive Remote Images ===
-Contributors: Kasonzhao, grosbouff, kraoc
+Contributors: Kasonzhao, grosbouff
 Donate link: 
 Tags: Archive Remote Images, image archive, grab images, cache Images, auto-save images, media
 Requires at least: 3.0
