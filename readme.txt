@@ -50,12 +50,12 @@ A: Yes, there is several hooks you can use.  Search in the code for "apply_filte
 2. Settings page
 
 == Changelog ==
-= 1.0.7 (by Kraoc) =
-* Deep clean html content on post load
-* Add normalize on document save
-= 1.0.6 (by Kraoc) =
-* Add default encoding when loading DOM
-* removed doctype / html / body from document (only since PHP 5.4).
+= 1.0.7 =
+* Deep clean html content on post load (by Kraoc)
+* Add normalize on document save (by Kraoc)
+= 1.0.6 =
+* Add default encoding when loading DOM  (by Kraoc)
+* removed doctype / html / body from document (only since PHP 5.4). (by Kraoc)
 = 1.0.5 =
 * added function is_local_server() to avoid error in get_domain() when used on localhost.
 = 1.0.4 =
